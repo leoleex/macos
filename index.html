@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="macOS Web Desktop - 高完成度网页版 macOS 桌面模拟系统">
+  <title>macOS Web Desktop</title>
+  <link rel="stylesheet" href="css/macos.css">
+</head>
+<body>
+  <!-- Boot Screen -->
+  <div id="boot-screen">
+    <svg class="apple-logo" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.21-1.98 1.07-3.11-1.05.05-2.31.72-3.06 1.66-.68.84-1.21 2.17-1.06 3.36 1.23.09 2.48-.62 3.05-1.91z"/>
+    </svg>
+    <div class="progress-bar">
+      <div class="progress-fill"></div>
+    </div>
+  </div>
+
+  <!-- Lock Screen -->
+  <div id="lock-screen" style="display:none;">
+    <div class="lock-content">
+      <div class="lock-time">12:00</div>
+      <div class="lock-date">1月1日 星期一</div>
+      <div class="lock-user">用户</div>
+      <div class="lock-hint">点击或按空格键解锁</div>
+    </div>
+  </div>
+
+  <!-- Shutdown Screen -->
+  <div id="shutdown-screen">
+    <div class="spinner"></div>
+    <div>正在关机...</div>
+  </div>
+
+  <!-- Screensaver -->
+  <div id="screensaver">
+    <canvas id="screensaver-canvas"></canvas>
+  </div>
+
+  <!-- Desktop -->
+  <div id="desktop" style="opacity:0;transform:scale(1.05);transition:opacity 0.5s ease,transform 0.5s ease;">
+    <!-- Desktop Icons -->
+    <div id="desktop-icons">
+      <div class="desktop-icon" data-app="finder">
+        <img src="assets/icons/finder.svg" alt="Finder">
+        <div class="icon-label">Finder</div>
+      </div>
+      <div class="desktop-icon" data-app="safari">
+        <img src="assets/icons/safari.svg" alt="Safari">
+        <div class="icon-label">Safari</div>
+      </div>
+      <div class="desktop-icon" data-app="settings">
+        <img src="assets/icons/settings.svg" alt="设置">
+        <div class="icon-label">系统设置</div>
+      </div>
+      <div class="desktop-icon" data-app="terminal">
+        <img src="assets/icons/terminal.svg" alt="终端">
+        <div class="icon-label">终端</div>
+      </div>
+      <div class="desktop-icon" data-app="textedit">
+        <img src="assets/icons/textedit.svg" alt="文本编辑">
+        <div class="icon-label">文本编辑</div>
+      </div>
+      <div class="desktop-icon" data-app="notes">
+        <img src="assets/icons/notes.svg" alt="备忘录">
+        <div class="icon-label">备忘录</div>
+      </div>
+      <div class="desktop-icon" data-app="calendar">
+        <img src="assets/icons/calendar.svg" alt="日历">
+        <div class="icon-label">日历</div>
+      </div>
+      <div class="desktop-icon" data-app="photos">
+        <img src="assets/icons/photos.svg" alt="照片">
+        <div class="icon-label">照片</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Menu Bar -->
+  <div id="menu-bar">
+    <div class="menu-left">
+      <div class="menu-item menu-apple" data-menu="apple">
+        <svg viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px;">
+          <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.21-1.98 1.07-3.11-1.05.05-2.31.72-3.06 1.66-.68.84-1.21 2.17-1.06 3.36 1.23.09 2.48-.62 3.05-1.91z"/>
+        </svg>
+      </div>
+      <div class="menu-item" data-menu="app" style="font-weight:700;">Finder</div>
+      <div class="menu-item" data-menu="file">文件</div>
+      <div class="menu-item" data-menu="edit">编辑</div>
+      <div class="menu-item" data-menu="view">显示</div>
+    </div>
+    <div class="menu-right">
+      <div class="menu-item" id="menu-battery" title="电池">🔋 100%</div>
+      <div class="menu-item" id="menu-wifi" title="Wi-Fi">📶</div>
+      <div class="menu-item" id="menu-date">1月1日 周一 12:00</div>
+      <div class="menu-item" id="menu-control-center" title="控制中心">⛭</div>
+      <div class="menu-item" id="menu-notifications" title="通知中心">🔔</div>
+    </div>
+  </div>
+
+  <!-- Apple Menu Dropdown -->
+  <div id="apple-menu" class="menu-dropdown" style="left:12px;">
+    <div class="menu-dropdown-item" data-action="about">关于本机</div>
+    <div class="menu-dropdown-separator"></div>
+    <div class="menu-dropdown-item" data-action="settings">系统设置...</div>
+    <div class="menu-dropdown-item" data-action="app-store">App Store</div>
+    <div class="menu-dropdown-separator"></div>
+    <div class="menu-dropdown-item" data-action="recent">最近使用的项目</div>
+    <div class="menu-dropdown-separator"></div>
+    <div class="menu-dropdown-item" data-action="force-quit">强制退出...<span class="shortcut">⌥⌘⎋</span></div>
+    <div class="menu-dropdown-separator"></div>
+    <div class="menu-dropdown-item" data-action="sleep">睡眠</div>
+    <div class="menu-dropdown-item" data-action="restart">重新启动...</div>
+    <div class="menu-dropdown-item" data-action="shutdown">关机...<span class="shortcut">⌃⌘⏏</span></div>
+    <div class="menu-dropdown-separator"></div>
+    <div class="menu-dropdown-item" data-action="lock">锁定屏幕<span class="shortcut">⌃⌘Q</span></div>
+    <div class="menu-dropdown-item" data-action="logout">退出登录...</div>
+  </div>
+
+  <!-- App Menu Dropdown -->
+  <div id="app-menu" class="menu-dropdown" style="left:50px;">
+    <div class="menu-dropdown-item" data-action="about-app">关于 Finder</div>
+    <div class="menu-dropdown-separator"></div>
+    <div class="menu-dropdown-item" data-action="preferences">偏好设置...<span class="shortcut">⌘,</span></div>
+    <div class="menu-dropdown-separator"></div>
+    <div class="menu-dropdown-item" data-action="empty-trash">清倒废纸篓</div>
+    <div class="menu-dropdown-separator"></div>
+    <div class="menu-dropdown-item" data-action="hide">隐藏 Finder<span class="shortcut">⌘H</span></div>
+    <div class="menu-dropdown-item" data-action="hide-others">隐藏其他<span class="shortcut">⌥⌘H</span></div>
+    <div class="menu-dropdown-item" data-action="show-all">显示全部</div>
+    <div class="menu-dropdown-separator"></div>
+    <div class="menu-dropdown-item" data-action="quit">退出 Finder<span class="shortcut">⌘Q</span></div>
+  </div>
+
+  <!-- File Menu Dropdown -->
+  <div id="file-menu" class="menu-dropdown" style="left:90px;">
+    <div class="menu-dropdown-item" data-action="new-folder">新建文件夹<span class="shortcut">⇧⌘N</span></div>
+    <div class="menu-dropdown-item" data-action="new-tab">新建标签页<span class="shortcut">⌘T</span></div>
+    <div class="menu-dropdown-item" data-action="new-window">新建 Finder 窗口<span class="shortcut">⌘N</span></div>
+    <div class="menu-dropdown-separator"></div>
+    <div class="menu-dropdown-item" data-action="open">打开<span class="shortcut">⌘O</span></div>
+    <div class="menu-dropdown-item" data-action="close">关闭窗口<span class="shortcut">⌘W</span></div>
+    <div class="menu-dropdown-separator"></div>
+    <div class="menu-dropdown-item" data-action="get-info">显示简介<span class="shortcut">⌘I</span></div>
+    <div class="menu-dropdown-item" data-action="rename">重新命名</div>
+    <div class="menu-dropdown-separator"></div>
+    <div class="menu-dropdown-item" data-action="compress">压缩</div>
+  </div>
+
+  <!-- Edit Menu Dropdown -->
+  <div id="edit-menu" class="menu-dropdown" style="left:130px;">
+    <div class="menu-dropdown-item" data-action="undo">撤销<span class="shortcut">⌘Z</span></div>
+    <div class="menu-dropdown-item" data-action="redo">重做<span class="shortcut">⇧⌘Z</span></div>
+    <div class="menu-dropdown-separator"></div>
+    <div class="menu-dropdown-item" data-action="cut">剪切<span class="shortcut">⌘X</span></div>
+    <div class="menu-dropdown-item" data-action="copy">拷贝<span class="shortcut">⌘C</span></div>
+    <div class="menu-dropdown-item" data-action="paste">粘贴<span class="shortcut">⌘V</span></div>
+    <div class="menu-dropdown-item" data-action="select-all">全选<span class="shortcut">⌘A</span></div>
+    <div class="menu-dropdown-separator"></div>
+    <div class="menu-dropdown-item" data-action="find">查找<span class="shortcut">⌘F</span></div>
+  </div>
+
+  <!-- View Menu Dropdown -->
+  <div id="view-menu" class="menu-dropdown" style="left:170px;">
+    <div class="menu-dropdown-item" data-action="icon-view">为图标<span class="shortcut">⌘1</span></div>
+    <div class="menu-dropdown-item" data-action="list-view">为列表<span class="shortcut">⌘2</span></div>
+    <div class="menu-dropdown-item" data-action="column-view">为分栏<span class="shortcut">⌘3</span></div>
+    <div class="menu-dropdown-separator"></div>
+    <div class="menu-dropdown-item" data-action="clean">整理</div>
+    <div class="menu-dropdown-item" data-action="clean-by">整理方式</div>
+    <div class="menu-dropdown-separator"></div>
+    <div class="menu-dropdown-item" data-action="show-preview">显示预览</div>
+    <div class="menu-dropdown-item" data-action="show-sidebar">显示边栏</div>
+  </div>
+
+  <!-- Control Center -->
+  <div id="control-center">
+    <div class="cc-grid">
+      <div class="cc-tile active" data-toggle="wifi">
+        <div class="cc-icon">📶</div>
+        <div class="cc-label">Wi-Fi</div>
+      </div>
+      <div class="cc-tile active" data-toggle="bluetooth">
+        <div class="cc-icon">🔵</div>
+        <div class="cc-label">蓝牙</div>
+      </div>
+      <div class="cc-tile" data-toggle="airplane">
+        <div class="cc-icon">✈️</div>
+        <div class="cc-label">飞行模式</div>
+      </div>
+      <div class="cc-tile active" data-toggle="dnd">
+        <div class="cc-icon">🌙</div>
+        <div class="cc-label">勿扰模式</div>
+      </div>
+    </div>
+    <div class="cc-slider-group">
+      <div class="cc-slider-label"><span>🌙 显示器亮度</span></div>
+      <input type="range" class="cc-slider" min="0" max="100" value="80">
+    </div>
+    <div class="cc-slider-group">
+      <div class="cc-slider-label"><span>🔊 音量</span></div>
+      <input type="range" class="cc-slider" min="0" max="100" value="60">
+    </div>
+    <div class="cc-grid" style="margin-top:10px;">
+      <div class="cc-tile" data-action="spotlight">
+        <div class="cc-icon">🔍</div>
+        <div class="cc-label">Spotlight</div>
+      </div>
+      <div class="cc-tile" data-action="screen-mirror">
+        <div class="cc-icon">📺</div>
+        <div class="cc-label">屏幕镜像</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notification Center -->
+  <div id="notification-center">
+    <div class="nc-header">
+      <span>通知中心</span>
+      <span style="font-size:12px;color:var(--text-tertiary);cursor:pointer;">清除全部</span>
+    </div>
+    <div class="nc-list">
+      <div class="nc-item">
+        <div class="nc-item-header">
+          <div class="nc-item-icon" style="background:#007AFF;">📅</div>
+          <div class="nc-item-title">日历</div>
+          <div class="nc-item-time">10分钟前</div>
+        </div>
+        <div class="nc-item-body">今天没有即将发生的事件</div>
+      </div>
+      <div class="nc-item">
+        <div class="nc-item-header">
+          <div class="nc-item-icon" style="background:#28C840;">✉️</div>
+          <div class="nc-item-title">邮件</div>
+          <div class="nc-item-time">30分钟前</div>
+        </div>
+        <div class="nc-item-body">欢迎使用 macOS Web Desktop</div>
+      </div>
+      <div class="nc-item">
+        <div class="nc-item-header">
+          <div class="nc-item-icon" style="background:#FF9500;">⚙️</div>
+          <div class="nc-item-title">系统</div>
+          <div class="nc-item-time">1小时前</div>
+        </div>
+        <div class="nc-item-body">系统已更新到最新版本</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Spotlight -->
+  <div id="spotlight">
+    <div class="spotlight-input-wrapper">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="spotlight-input" placeholder="搜索" autocomplete="off">
+    </div>
+    <div class="spotlight-results"></div>
+  </div>
+
+  <!-- Window Layer -->
+  <div id="window-layer"></div>
+
+  <!-- Dock -->
+  <div id="dock">
+    <div class="dock-item" data-app="finder" title="Finder">
+      <img src="assets/icons/finder.svg" alt="Finder">
+      <div class="dock-indicator"></div>
+      <div class="dock-tooltip">Finder</div>
+    </div>
+    <div class="dock-item" data-app="safari" title="Safari">
+      <img src="assets/icons/safari.svg" alt="Safari">
+      <div class="dock-indicator"></div>
+      <div class="dock-tooltip">Safari</div>
+    </div>
+    <div class="dock-item" data-app="terminal" title="终端">
+      <img src="assets/icons/terminal.svg" alt="终端">
+      <div class="dock-indicator"></div>
+      <div class="dock-tooltip">终端</div>
+    </div>
+    <div class="dock-item" data-app="textedit" title="文本编辑">
+      <img src="assets/icons/textedit.svg" alt="文本编辑">
+      <div class="dock-indicator"></div>
+      <div class="dock-tooltip">文本编辑</div>
+    </div>
+    <div class="dock-item" data-app="notes" title="备忘录">
+      <img src="assets/icons/notes.svg" alt="备忘录">
+      <div class="dock-indicator"></div>
+      <div class="dock-tooltip">备忘录</div>
+    </div>
+    <div class="dock-item" data-app="calendar" title="日历">
+      <img src="assets/icons/calendar.svg" alt="日历">
+      <div class="dock-indicator"></div>
+      <div class="dock-tooltip">日历</div>
+    </div>
+    <div class="dock-item" data-app="photos" title="照片">
+      <img src="assets/icons/photos.svg" alt="照片">
+      <div class="dock-indicator"></div>
+      <div class="dock-tooltip">照片</div>
+    </div>
+    <div class="dock-separator"></div>
+    <div class="dock-item" data-app="settings" title="系统设置">
+      <img src="assets/icons/settings.svg" alt="系统设置">
+      <div class="dock-indicator"></div>
+      <div class="dock-tooltip">系统设置</div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/core/system.js"></script>
+  <script src="js/apps/finder.js"></script>
+  <script src="js/apps/safari.js"></script>
+  <script src="js/apps/terminal.js"></script>
+  <script src="js/apps/textedit.js"></script>
+  <script src="js/apps/notes.js"></script>
+  <script src="js/apps/calendar.js"></script>
+  <script src="js/apps/photos.js"></script>
+  <script src="js/apps/settings.js"></script>
+  <script>
+    // ============================================
+    // Main Application Entry Point
+    // ============================================
+    (function() {
+      'use strict';
+
+      // Initialize managers
+      const bootManager = new BootManager();
+      const menuManager = new MenuManager();
+      const spotlightManager = new SpotlightManager();
+      const contextMenuManager = new ContextMenuManager();
+
+      // Initialize window manager after DOM ready
+      window.wm = new WindowManager();
+
+      // Initialize screensaver
+      const screensaverManager = new ScreensaverManager();
+
+      // Setup desktop icons
+      document.querySelectorAll('.desktop-icon').forEach(icon => {
+        icon.addEventListener('dblclick', () => {
+          const appId = icon.dataset.app;
+          if (appId) {
+            window.wm.createWindow(appId);
+          }
+        });
+
+        icon.addEventListener('click', () => {
+          document.querySelectorAll('.desktop-icon').forEach(i => i.classList.remove('selected'));
+          icon.classList.add('selected');
+        });
+      });
+
+      // Setup dock items
+      document.querySelectorAll('.dock-item').forEach(item => {
+        item.addEventListener('click', () => {
+          const appId = item.dataset.app;
+          if (!appId) return;
+
+          // Check if app is already open
+          const windows = window.wm.getWindowsByApp(appId);
+          if (windows.length > 0) {
+            // If any window is minimized, restore it; otherwise focus the first
+            const minimized = windows.find(w => w.minimized);
+            if (minimized) {
+              window.wm.restoreWindow(minimized.id);
+            } else {
+              window.wm.focusWindow(windows[0].id);
+            }
+          } else {
+            window.wm.createWindow(appId);
+          }
+        });
+      });
+
+      // Setup menu bar actions
+      document.querySelectorAll('.menu-dropdown-item').forEach(item => {
+        item.addEventListener('click', () => {
+          const action = item.dataset.action;
+          switch (action) {
+            case 'settings':
+              window.wm.createWindow('settings');
+              break;
+            case 'about':
+              alert('macOS Web Desktop v1.0\n基于 HTML/CSS/JavaScript 构建');
+              break;
+            case 'new-folder':
+              window.wm.createWindow('finder');
+              break;
+            case 'new-window':
+              window.wm.createWindow('finder');
+              break;
+            case 'sleep':
+              document.getElementById('lock-screen').style.display = 'flex';
+              document.getElementById('lock-screen').style.transform = 'none';
+              document.getElementById('lock-screen').style.opacity = '1';
+              bootManager.showLockScreen();
+              break;
+            case 'shutdown':
+              bootManager.shutdown();
+              break;
+            case 'restart':
+              bootManager.shutdown();
+              break;
+            case 'lock':
+              document.getElementById('lock-screen').style.display = 'flex';
+              document.getElementById('lock-screen').style.transform = 'none';
+              document.getElementById('lock-screen').style.opacity = '1';
+              bootManager.showLockScreen();
+              break;
+            case 'force-quit':
+              if (window.wm.activeWindowId) {
+                window.wm.closeWindow(window.wm.activeWindowId);
+              }
+              break;
+            case 'quit':
+              if (window.wm.activeWindowId) {
+                window.wm.closeWindow(window.wm.activeWindowId);
+              }
+              break;
+            case 'hide':
+              if (window.wm.activeWindowId) {
+                window.wm.minimizeWindow(window.wm.activeWindowId);
+              }
+              break;
+            case 'find':
+              spotlightManager.open();
+              break;
+          }
+        });
+      });
+
+      // Control Center toggle
+      const controlCenterBtn = document.getElementById('menu-control-center');
+      const controlCenter = document.getElementById('control-center');
+      if (controlCenterBtn && controlCenter) {
+        controlCenterBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          controlCenter.classList.toggle('show');
+          document.getElementById('notification-center').classList.remove('show');
+        });
+      }
+
+      // Notification Center toggle
+      const notifBtn = document.getElementById('menu-notifications');
+      const notifCenter = document.getElementById('notification-center');
+      if (notifBtn && notifCenter) {
+        notifBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          notifCenter.classList.toggle('show');
+          controlCenter.classList.remove('show');
+        });
+      }
+
+      // Control Center tiles
+      document.querySelectorAll('.cc-tile[data-toggle]').forEach(tile => {
+        tile.addEventListener('click', () => {
+          tile.classList.toggle('active');
+        });
+      });
+
+      // Control Center actions
+      document.querySelectorAll('.cc-tile[data-action]').forEach(tile => {
+        tile.addEventListener('click', () => {
+          const action = tile.dataset.action;
+          if (action === 'spotlight') {
+            spotlightManager.open();
+            controlCenter.classList.remove('show');
+          }
+        });
+      });
+
+      // Close panels on outside click
+      document.addEventListener('click', (e) => {
+        if (!e.target.closest('#control-center') && !e.target.closest('#menu-control-center')) {
+          controlCenter.classList.remove('show');
+        }
+        if (!e.target.closest('#notification-center') && !e.target.closest('#menu-notifications')) {
+          notifCenter.classList.remove('show');
+        }
+      });
+
+      // Update menu bar clock
+      function updateMenuClock() {
+        const now = new Date();
+        const dateEl = document.getElementById('menu-date');
+        if (dateEl) {
+          dateEl.textContent = now.toLocaleDateString('zh-CN', { 
+            month: 'short', 
+            day: 'numeric', 
+            weekday: 'short',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false
+          });
+        }
+      }
+      updateMenuClock();
+      setInterval(updateMenuClock, 1000);
+
+      // Keyboard shortcuts
+      document.addEventListener('keydown', (e) => {
+        // Cmd+W close window
+        if ((e.metaKey || e.ctrlKey) && e.key === 'w') {
+          e.preventDefault();
+          if (window.wm.activeWindowId) {
+            window.wm.closeWindow(window.wm.activeWindowId);
+          }
+        }
+        // Cmd+M minimize window
+        if ((e.metaKey || e.ctrlKey) && e.key === 'm') {
+          e.preventDefault();
+          if (window.wm.activeWindowId) {
+            window.wm.minimizeWindow(window.wm.activeWindowId);
+          }
+        }
+        // Cmd+N new window
+        if ((e.metaKey || e.ctrlKey) && e.key === 'n') {
+          e.preventDefault();
+          window.wm.createWindow('finder');
+        }
+        // Cmd+Tab-like (simplified)
+        if ((e.metaKey || e.ctrlKey) && e.key === 'Tab') {
+          e.preventDefault();
+          const windows = Array.from(window.wm.windows.values()).filter(w => !w.minimized);
+          if (windows.length > 1) {
+            const currentIdx = windows.findIndex(w => w.id === window.wm.activeWindowId);
+            const nextIdx = (currentIdx + 1) % windows.length;
+            window.wm.focusWindow(windows[nextIdx].id);
+          }
+        }
+      });
+
+      // Load saved wallpaper
+      const savedWallpaper = localStorage.getItem('macos_wallpaper');
+      if (savedWallpaper) {
+        const desktop = document.getElementById('desktop');
+        const lockScreen = document.getElementById('lock-screen');
+        if (desktop) desktop.style.backgroundImage = `url(${savedWallpaper})`;
+        if (lockScreen) lockScreen.style.backgroundImage = `url(${savedWallpaper})`;
+      }
+
+      // Load dock auto-hide setting
+      const dockAutoHide = localStorage.getItem('macos_setting_dock-autohide');
+      if (dockAutoHide === 'true') {
+        document.getElementById('dock').classList.add('auto-hide');
+      }
+
+      // Start boot sequence
+      bootManager.boot();
+
+      // Error handling
+      window.addEventListener('error', (e) => {
+        console.error('Application error:', e.error);
+      });
+
+      window.addEventListener('unhandledrejection', (e) => {
+        console.error('Unhandled promise rejection:', e.reason);
+      });
+
+      console.log('macOS Web Desktop initialized successfully');
+    })();
+  </script>
+</body>
+</html>

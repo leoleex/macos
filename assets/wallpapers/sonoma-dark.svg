@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2560 1440">
+  <defs>
+    <linearGradient id="skyDark" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#0F1729"/>
+      <stop offset="50%" style="stop-color:#1A2744"/>
+      <stop offset="100%" style="stop-color:#2D3A5C"/>
+    </linearGradient>
+    <linearGradient id="hill1d" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#1A2F1A"/>
+      <stop offset="100%" style="stop-color:#0F1F0F"/>
+    </linearGradient>
+    <linearGradient id="hill2d" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#2D4A2D"/>
+      <stop offset="100%" style="stop-color:#1A2F1A"/>
+    </linearGradient>
+    <linearGradient id="hill3d" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#3D5A3D"/>
+      <stop offset="100%" style="stop-color:#2D4A2D"/>
+    </linearGradient>
+  </defs>
+  <rect width="2560" height="1440" fill="url(#skyDark)"/>
+  <circle cx="2000" cy="200" r="80" fill="#FFF8DC" opacity="0.9"/>
+  <circle cx="1980" cy="180" r="70" fill="#0F1729" opacity="0.3"/>
+  <circle cx="300" cy="150" r="2" fill="white" opacity="0.8"/>
+  <circle cx="500" cy="250" r="1.5" fill="white" opacity="0.6"/>
+  <circle cx="800" cy="100" r="2" fill="white" opacity="0.9"/>
+  <circle cx="1200" cy="300" r="1" fill="white" opacity="0.5"/>
+  <circle cx="1500" cy="180" r="1.5" fill="white" opacity="0.7"/>
+  <circle cx="1800" cy="250" r="2" fill="white" opacity="0.8"/>
+  <circle cx="2200" cy="120" r="1.5" fill="white" opacity="0.6"/>
+  <path d="M0 900 Q400 700 800 850 T1600 800 T2560 900 L2560 1440 L0 1440 Z" fill="url(#hill1d)"/>
+  <path d="M0 1000 Q600 850 1200 950 T2560 1000 L2560 1440 L0 1440 Z" fill="url(#hill2d)"/>
+  <path d="M0 1100 Q800 1000 1600 1050 T2560 1100 L2560 1440 L0 1440 Z" fill="url(#hill3d)"/>
+  <path d="M0 1200 Q1000 1150 2000 1200 T2560 1250 L2560 1440 L0 1440 Z" fill="#1A2F1A"/>
+</svg>
